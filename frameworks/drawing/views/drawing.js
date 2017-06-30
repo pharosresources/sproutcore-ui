@@ -158,31 +158,8 @@ SCUI.DrawingView = SC.View.extend({
     //console.log('%@.render()'.fmt(this));
     var frame = this.get('frame');
     if (firstTime) {
-      if (!SC.browser.msie) {
+      if (!SC.browser.isIE8OrLower) {
         context.push('<canvas class="base-layer" width="%@" height="%@"></canvas>'.fmt(frame.width, frame.height));
-      }
-    }
-    else {
-      var canvasElem = this.$('canvas.base-layer');
-      if (canvasElem) {
-        canvasElem.attr('width', frame.width);
-        canvasElem.attr('height', frame.height);
-        if (canvasElem.length > 0) {
-          var cntx = canvasElem[0].getContext('2d'); // Get the actual canvas object context
-          if (cntx) {
-            cntx.clearRect(0, 0, frame.width, frame.height);
-            this._drawShapes(cntx);
-          }
-          else {
-            console.error("SCUI.DrawingView.render(): Canvas object context is not accessible.");
-          }
-        }
-        else {
-          console.error("SCUI.DrawingView.render(): Canvas element array length is zero.");
-        }
-      }
-      else {
-        console.error("SCUI.DrawingView.render(): Canvas element is not accessible.");
       }
     }
     
@@ -219,8 +196,8 @@ SCUI.DrawingView = SC.View.extend({
   },
   
   didCreateLayer: function(){
-    if (SC.browser.msie) {
-      var frame = this.get('frame');
+    var frame = this.get('frame');
+    if (SC.browser.isIE8OrLower) {
       var canvas = document.createElement('CANVAS');
       canvas.className = 'base-layer';
       canvas.width = frame.width;
@@ -228,6 +205,28 @@ SCUI.DrawingView = SC.View.extend({
       this.$().append(canvas);
       canvas = G_vmlCanvasManager.initElement(canvas);
       this._canvasie = canvas;
+    }
+
+    var canvasElem = this.$('canvas.base-layer');
+    if (canvasElem) {
+        canvasElem.attr('width', frame.width);
+        canvasElem.attr('height', frame.height);
+        if (canvasElem.length > 0) {
+            var cntx = canvasElem[0].getContext('2d'); // Get the actual canvas object context
+            if (cntx) {
+                cntx.clearRect(0, 0, frame.width, frame.height);
+                this._drawShapes(cntx);
+            }
+            else {
+                console.error("SCUI.DrawingView.render(): Canvas object context is not accessible.");
+            }
+        }
+        else {
+            console.error("SCUI.DrawingView.render(): Canvas element array length is zero.");
+        }
+    }
+    else {
+        console.error("SCUI.DrawingView.render(): Canvas element is not accessible.");
     }
   }
   
